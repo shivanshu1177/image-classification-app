@@ -1,9 +1,21 @@
-from flask import Flask
+import os
+from flask import Flask, render_template
+from reverseProxy import proxyRequest
+
+MODE = os.getenv('FLASK_ENV')
+DEV_SERVER_URL = 'http://localhost:3000/'
+
 app = Flask(__name__)
+if Mode == "development":
+    app = Flask(__name__, static_folder=None)
 
 @app.route('/')
-def index():
-    return "hello from flask"
+@app.route('/<path:path>')
+def index(path=''):
+    if MODE == 'development':
+        return proxyRequest(DEV_SERVER_URL, path)
+    else:
+        return render_template("index.html")
 
 if __name__ == '__main__':
     app.run()
